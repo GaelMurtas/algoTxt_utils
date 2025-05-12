@@ -15,25 +15,9 @@ void Prog::init(const int & argc, char** str){
 Prog::Prog(const int & argc, char** str){
     for(int i=1; i<argc; i++){
         args.push_back(string(str[i]));
-    }
+        }
     loadOption();
-    //for(string a: args){cout << a << endl;}
-    /*auto addOption = [](string name, string fullName, string message) -> Option{
-        Option o;
-        o.name = name;
-        o.fullName = fullName;
-        o.message = message;
-        return o;
-    };
-
-    options.emplace("memory",addOption("-m","--memory", "[size_t] Quantité de mémoire vive actuellement disponible en Mo."));
-    options.emplace("threads",addOption("-t","--threads", "[size_t] nombre de threads du processeur à utiliser."));
-    
-    //options.emplace("config",addOption("-c", "--config", "Charge les paramètres du fichier de configuration."));
-    options.emplace("generate",addOption("-g", "--generate", "[size_t s] Rempli le fichier 'path' une chaine de 's' Ko."));
-    options.emplace("generateCopie", addOption("-gc", "--generateCopie", "[string path] [size_t] Génére une chaine 1 Mo puis créé un chaine de 's' Mo avec des copies de la chaine créé."));*/
-
-}
+    }
 
 Prog::~Prog(){
     delete instance;
@@ -59,25 +43,6 @@ void Prog::loadOption(){
     }
     ProgException::postLoopCheck(args, source_location::current());
 }
-
-
-
-/*void Prog::calculs(){
-    if(options["generate"].isInit){
-        cout << "- - - - - - - - - -\n   Lancement de la génération aléatoire\n";
-        Text rt(options["generate"].valueStr, options["memory"].valueInt/4);
-        RandomText::nbt = options["threads"].valueInt;
-        RandomText::randTextT(rt,options["generate"].valueInt);
-    }
-    if(options["recherche"].isInit){
-        cout << "- - - - - - - - - -\n   Lancement de la recherche de motifs\n";
-        Text texteRecherche(options["texte"].valueStr, options["memory"].valueInt/4);
-        Text motRecherche(options["mot"].valueStr, options["memory"].valueInt/4);
-        KMP::setNbThreads(options["threads"].valueInt);
-        KMP::setMemory(options["memory"].valueInt);
-        KMP::getInstance(texteRecherche, motRecherche).calcul();
-    }
-}*/
 
 void Prog::execute(const int & argc, char** str){
     if(!instance) init(argc, str);
@@ -205,7 +170,7 @@ Option o;
         if(!options["generate"].isInit) return;
         cout << "- - - - - - - - - -\nLancement de la génération du texte aléatoire\n- - - - - - - - - -\n";
         auto t1 = chrono::high_resolution_clock::now();
-        Text t(options["generate"].valueStr, options["memory"].valueInt _Mo);
+        Text t(options["generate"].valueStr, options["memory"].valueInt _Mo /2);
         RandomText::randTextT(t, options["generate"].valueInt);
         auto t2 = chrono::high_resolution_clock::now();
         chrono::duration<double, std::ratio<1>> s_double = t2 - t1;

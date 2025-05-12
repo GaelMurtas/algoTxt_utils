@@ -116,41 +116,15 @@ void KMP::rechercheCore(const string & txt, const string & word, size_t pos){
      }
 }
 
-/*void KMP::recherche(){
-     result.clear();
-     string word = mot.get();
-     //On veut s'assurer que le nombre de  thread convient par rapport à la taille des inputs et la mémoire disponible
-     while((memory<=(2*mot.getSize()*nbt)) && (nbt>1)) --nbt;
-     //calcul du nombre de divisions à faire sur le texte
-     size_t nbParts = (size_t)(text.getSize()/(memory-2*nbt*mot.getSize()))+1;
-     size_t partsLength = [&]()->size_t{
-          if(text.getSize()%nbParts == 0){return text.getSize()/nbParts;}
-          return 1+(text.getSize()/nbParts);
-     }() + 2*mot.getSize() - 2;
-     text.setMaxSize(partsLength);
-     for( size_t pos = 0; pos < text.getSize();){
-          vector<thread> threads(nbt);
-          vector<string> STR(nbt);
-          for(size_t t = 0; ((t<nbt)&&(pos<text.getSize())); ++t){
-               STR[t] = text.get(max((long int)0,(long int)(pos-mot.getSize()+1)));
-               threads[t] = thread(rechercheCore, ref(STR[t]), ref(word), pos);
-               pos += partsLength;
-          }
-          for (thread & T: threads){
-                if (T.joinable()) T.join();
-          }
-     }
-}*/
-
 void KMP::recherche(){
      result.clear();
      string word = mot.get();
-     std::cout << "[INFO] Taille du mot à chercher : " << word.size() << "\n";
-     std::cout << "[INFO] Taille totale du texte : " << text.getSize() << "\n";
+     //std::cout << "[INFO] Taille du mot à chercher : " << word.size() << "\n";
+     //std::cout << "[INFO] Taille totale du texte : " << text.getSize() << "\n";
  
      // Ajustement du nombre de threads en fonction de la mémoire
      while ((memory <= (2 * mot.getSize() * nbt)) && (nbt > 1)) {
-         std::cout << "[DEBUG] Réduction du nombre de threads : nbt = " << nbt << " -> " << (nbt - 1) << "\n";
+         //std::cout << "[DEBUG] Réduction du nombre de threads : nbt = " << nbt << " -> " << (nbt - 1) << "\n";
          --nbt;
      }
      //variables globales de l'algorithme
@@ -159,16 +133,16 @@ void KMP::recherche(){
      // Calcul du nombre de parties
      //division minimale nécessaire pour éviter les dépassement mémoire
      size_t nbParts = (size_t)(textSize / (memory - 2 * nbt * motSize)) + 1;
-     std::cout << "[INFO] Nombre de segments prévus : " << nbParts << "\n";
+     //std::cout << "[INFO] Nombre de segments prévus : " << nbParts << "\n";
      //prise en compte du nombre de thread
      nbParts = nbParts*nbt;
-     std::cout << "[INFO] Nombre de segments prévus : " << nbParts << "\n";
+     //std::cout << "[INFO] Nombre de segments prévus : " << nbParts << "\n";
      //longueur de chaques parties de texte à considéré
      size_t partsLength = [&]() -> size_t {
          size_t base = textSize / nbParts;
          return (textSize % nbParts == 0 ? base : base + 1);
      }() + 2 * motSize - 2;
-     std::cout << "[INFO] Longueur des segments (avec recouvrement) : " << partsLength << "\n";
+     //std::cout << "[INFO] Longueur des segments (avec recouvrement) : " << partsLength << "\n";
  
      //à remplacer part setMaxSize(la longueur de la grosse partie) pour rendre l'algo plus rapide
      //text.setMaxSize(partsLength);
@@ -176,7 +150,7 @@ void KMP::recherche(){
      //boucle principale on découpe dans un premier temps le texte en parts adaptés à la mémoire à utiliser
      //la variables pos nous donne la position début du segment à analyse dans le texte
      for (size_t pos = 0; pos < textSize;) {
-         std::cout << "\n[LOOP] Position de départ dans le texte : " << pos << "\n";
+         //std::cout << "\n[LOOP] Position de départ dans le texte : " << pos << "\n";
          //variables locales
          vector<thread> threads(nbt);
          vector<string> STR(nbt);
@@ -186,28 +160,28 @@ void KMP::recherche(){
          string textPart = text.get(partStart);
          //boucle secondaire gérant le multi-thread
          for (size_t t = 0; (t < nbt) && (pos < textSize); ++t) {
-             std::cout << "[THREAD " << t << " loop begin\n";
+             //std::cout << "[THREAD " << t << " loop begin\n";
              //position dans le texte en début de boucle
              size_t textPosStart = std::max((long)0, (long)(pos - motSize + 1));
              //position dans textPart en début de boucle
              size_t segmentStart = (size_t)std::max((long)0, (long)(pos - motSize + 1 - partStart));
              //ségment à analyser dans ce thread
              STR[t] = textPart.substr(segmentStart, partsLength);
-             std::cout << "[THREAD " << t << "] Lecture texte à partir de : " << segmentStart
-                       << " (taille effective : " << STR[t].size() << ")\n";
+             //std::cout << "[THREAD " << t << "] Lecture texte à partir de : " << segmentStart
+             //          << " (taille effective : " << STR[t].size() << ")\n";
              //lancement de l'algo KMP sur le segment voulu
              threads[t] = thread(rechercheCore, ref(STR[t]), ref(word), textPosStart);
-             std::cout << "[THREAD " << t << "] Démarré avec position d'origine : " << pos << "\n";
+             //std::cout << "[THREAD " << t << "] Démarré avec position d'origine : " << pos << "\n";
              pos += partsLength;
          }
          for (size_t t = 0; t < threads.size(); ++t) {
              if (threads[t].joinable()) {
                  threads[t].join();
-                 std::cout << "[THREAD " << t << "] Terminé.\n";
+                 //std::cout << "[THREAD " << t << "] Terminé.\n";
              }
          }
      }
-     std::cout << "\n[INFO] Recherche terminée. Résultats trouvés : " << result.size() << "\n";
+     //std::cout << "\n[INFO] Recherche terminée. Résultats trouvés : " << result.size() << "\n";
  }
  
 

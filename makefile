@@ -26,7 +26,7 @@ kmpObj = kmp.o
 
 mainFile = work.cpp
 objs = $(exceptionObj) $(textObj) $(randObj) $(kmpObj) $(progObj)
-exe = test
+exe = textUtils
 
 
 all: $(exe) clean execution
